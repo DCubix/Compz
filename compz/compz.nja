@@ -1,0 +1,6 @@
+{
+  "venv": "", 
+  "name": "compz", 
+  "license": "MIT License", 
+  "description": "Simple GUI system for the Blender Game Engine"
+}
