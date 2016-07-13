@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from bge import events
+from bge import events, render
 
 from .point import *
 from .rect import *
@@ -17,6 +17,7 @@ COMP_STATE_INACTIVE = "inactive"
 class Component:
 
 	def __init__(self, style=None):
+		self.index = 0
 		self.bounds = Rect(0, 0, 100, 100)
 		self.parent = None
 		self.backColor = (0.6, 0.6, 0.6, 1)
@@ -31,10 +32,17 @@ class Component:
 		else:
 			self.style = Style()
 
-		self.zorder = 0
+		self.zorder = 99
 
 		self.visible = True
 		self.enabled = True
+		self.focused = False
+
+		self.row = 0
+		self.column = 0
+		self.margin = [0, 0]
+
+		self.drawBackground = True
 
 	@property
 	def position(self):
@@ -92,24 +100,48 @@ class Component:
 			pos.y = self.parent.position.y
 		return pos
 
+	def centerOnScreen(self, vertical=True, horizontal=True):
+		# Since self.parent has a layout, you can't do this.
+		if self.parent is not None:
+			return
+		if horizontal:
+			w = render.getWindowWidth()
+			self.x = w / 2 - self.width / 2
+
+		if vertical:
+			h = render.getWindowHeight()
+			self.y = h / 2 - self.height / 2
+
 	def event(self):
 		pass
 
 	def update(self):
 		if self.visible and self.enabled:
+			pindex = self.parent.index if self.parent is not None else 1
 			bounds = self.transformedBounds()
 			mx, my = GFX_mousePosition()
 			if bounds.hasPoint(mx, my):
 				if GFX_mouseClick(events.LEFTMOUSE):
 					if self.system.active is not None:
-						self.system.active.zorder = -99
+						self.system.active.state = COMP_STATE_NORMAL
+						self.system.active.focused = False
+						if hasattr(self.system.active, "layout"):
+							self.system.active.zorder = 99 + pindex
+						else:
+							self.system.active.zorder = -99 + pindex
 					self.system.active = self
-					self.zorder = 99
+					self.focused = True
+					self.zorder = 99 + pindex
 			else:
 				if GFX_mouseClick(events.LEFTMOUSE):
-					self.system.active = None
+					if self.system.active is not None:
+						self.system.active.focused = False
+						self.system.active = None
 
 	def draw(self):
+		if not self.drawBackground:
+			return
+
 		tex = None
 		o = 4
 		s = 16

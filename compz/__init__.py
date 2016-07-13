@@ -12,6 +12,10 @@ from .Compz import *
 
 from .event import *
 from .icon import *
+from .label import *
 from .button import *
 from .entry import *
+from .layout_base import *
+from .linear_layout import *
+from .grid_layout import *
 from .panel import *

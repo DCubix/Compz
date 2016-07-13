@@ -71,10 +71,15 @@ class Entry(Component):
 		if self.visible and self.enabled:
 			bounds = self.transformedBounds()
 			mx, my = GFX_mousePosition()
+
 			if bounds.hasPoint(mx, my):
 				if self.state == COMP_STATE_NORMAL:
 					self.state = COMP_STATE_HOVER
 					self.events.call(EV_MOUSE_ENTER, self)
+			else:
+				if self.state == COMP_STATE_HOVER:
+					self.state = COMP_STATE_NORMAL
+					self.events.call(EV_MOUSE_LEAVE, self)
 
 			if GFX_mouseClick(events.LEFTMOUSE):
 				if self.state == COMP_STATE_HOVER:
