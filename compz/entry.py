@@ -84,6 +84,8 @@ class Entry(Component):
 			if GFX_mouseClick(events.LEFTMOUSE):
 				if self.state == COMP_STATE_HOVER:
 					self.state = COMP_STATE_CLICK
+					self.__blink = True
+					self.__t.reset()
 					self.events.call(EV_MOUSE_CLICK, self)
 				elif self.state == COMP_STATE_CLICK and not bounds.hasPoint(mx, my):
 					self.state = COMP_STATE_NORMAL

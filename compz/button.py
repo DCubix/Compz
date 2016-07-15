@@ -40,7 +40,7 @@ class Button(Component):
 						self.events.call(EV_MOUSE_CLICK, self)
 				else:
 					self.state = COMP_STATE_NORMAL
-					self.events.call(EV_MOUSE_RELEASE, self)
+				self.events.call(EV_MOUSE_RELEASE, self)
 
 	def draw(self):
 		Component.draw(self)

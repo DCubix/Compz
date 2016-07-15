@@ -28,3 +28,7 @@ class Event:
 		evt = self.events[event]
 		if evt is not None:
 			evt(*args)
+
+	def register(self, event):
+		if event not in self.events:
+			self.events[event] = None

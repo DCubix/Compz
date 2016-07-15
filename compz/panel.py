@@ -19,7 +19,6 @@ class Panel(Component):
 
 	def update(self):
 		Component.update(self)
-		self.zorder = -self.index
 
 		if self.layout is not None:
 			self.layout.init()

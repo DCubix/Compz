@@ -44,6 +44,21 @@ def glDeleteBuffers(bufs):
 	_glDeleteBuffers(n, id_buf)
 
 
+def glGenVertexArray():
+	id_vao = Buffer(GL_INT, 1)
+	glGenVertexArrays(1, id_vao)
+	return id_vao.to_list()[0]
+
+
+_glDeleteVertexArrays = glDeleteVertexArrays
+
+
+def glDeleteVertexArrays(vaos):
+	n = len(vaos)
+	id_buf = Buffer(GL_INT, n, vaos)
+	_glDeleteVertexArrays(n, id_buf)
+
+
 def GFX_mousePosition():
 	w = render.getWindowWidth()
 	h = render.getWindowHeight()
@@ -52,6 +67,10 @@ def GFX_mousePosition():
 
 def GFX_mouseClick(button):
 	return logic.mouse.events[button] == logic.KX_INPUT_JUST_ACTIVATED
+
+
+def GFX_mouseDown(button):
+	return logic.mouse.events[button] == logic.KX_INPUT_ACTIVE
 
 
 def GFX_mouseRelease(button):
@@ -101,6 +120,8 @@ class GFXbase:
 		gluOrtho2D(0, width, height, 0)
 		glMatrixMode(GL_MODELVIEW)
 		glLoadIdentity()
+
+		glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST)
 
 	def drawQuad(self, x, y, w, h, texture=None, color=(1, 1, 1, 1)):
 		pass
@@ -232,12 +253,28 @@ class GFXdl(GFXbase):
 		glDeleteLists(self.quad, 1)
 
 
+class Glyph:
+
+	def __init__(self):
+		self.texture = None
+		self.uv = [0, 0, 1, 1]
+		self.position = [0, 0]
+		self.scale = [1, 1]
+		self.color = (1, 1, 1, 1)
+		self.tl = None
+		self.tr = None
+		self.bl = None
+		self.br = None
+
+
 class GFXvbo(GFXbase):
 
 	def __init__(self):
 		self.vbo = 0
 		self.uv = 0
 		self.program = 0
+		self._glyphs = []
+		self._batches = []
 
 		verts = [
 			0, 0, 0,

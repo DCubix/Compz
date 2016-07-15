@@ -14,6 +14,7 @@ class Texture:
 		self.size = [0, 0]
 		self._interp_mode = None
 		self.path = None
+		self.valid = True
 
 		self.bind()
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
@@ -70,6 +71,7 @@ class ImageTexture(Texture):
 
 		data = img.image
 		if data is None:
+			self.valid = False
 			#print("Unabled to load the image", image)
 			return
 

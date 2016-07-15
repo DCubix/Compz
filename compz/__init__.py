@@ -18,4 +18,8 @@ from .entry import *
 from .layout_base import *
 from .linear_layout import *
 from .grid_layout import *
+from .slider import *
 from .panel import *
+from .image import *
+from .checkbox import *
+from .colorpicker import *

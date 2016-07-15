@@ -40,7 +40,8 @@ class Compz:
 
 	def __draw__(self):
 		self.gfx.set2D()
-		comps = sorted(self.components, key=lambda x: x.zorder)
+		comps = sorted(self.components,
+			key=lambda x: isinstance(x, Panel), reverse=True)
 		for comp in comps:
 			if not comp.visible:
 				continue
@@ -51,16 +52,16 @@ class Compz:
 			comp.endDraw()
 
 	def event(self):
-		comps = sorted(self.components, key=lambda x: x.zorder, reverse=True)
+		comps = sorted(self.components, key=lambda x: isinstance(x, Panel))
 		for comp in comps:
 			comp.event()
 
 	def update(self):
-		comps = sorted(self.components, key=lambda x: x.zorder, reverse=True)
+		comps = sorted(self.components,
+			key=lambda x: isinstance(x, Panel), reverse=True)
 		for comp in comps:
 			if comp.parent is not None:
 				if not comp.parent.visible or not comp.parent.enabled:
 					continue
-			if comp.update():
-				break
+			comp.update()
 		self.event()

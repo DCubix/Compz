@@ -40,9 +40,12 @@ class Component:
 
 		self.row = 0
 		self.column = 0
+		self.columnSpan = 1
+		self.rowSpan = 1
 		self.margin = [0, 0]
 
 		self.drawBackground = True
+		self._prevTex = None
 
 	@property
 	def position(self):
@@ -124,14 +127,7 @@ class Component:
 				if GFX_mouseClick(events.LEFTMOUSE):
 					if self.system.active is not None:
 						self.system.active.state = COMP_STATE_NORMAL
-						self.system.active.focused = False
-						if hasattr(self.system.active, "layout"):
-							self.system.active.zorder = 99 + pindex
-						else:
-							self.system.active.zorder = -99 + pindex
 					self.system.active = self
-					self.focused = True
-					self.zorder = 99 + pindex
 			else:
 				if GFX_mouseClick(events.LEFTMOUSE):
 					if self.system.active is not None:
@@ -143,8 +139,6 @@ class Component:
 			return
 
 		tex = None
-		o = 4
-		s = 16
 		x, y = self.position.x, self.position.y
 		w, h = self.bounds.width, self.bounds.height
 
@@ -159,6 +153,8 @@ class Component:
 			o = self.style.offset
 			s = self.style.size
 			tex = self.style.textures[self.state]
+			if tex is None or not tex.valid:
+				tex = self.style.textures["normal"]
 			self.system.gfx.draw9Patch(x, y, w, h, o, s, t=tex)
 		else:
 			gfx = self.system.gfx
