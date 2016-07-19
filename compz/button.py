@@ -13,7 +13,7 @@ class Button(Component):
 	def __init__(self, text="Button", style=None):
 		super(Button, self).__init__(style=style)
 		self.text = text
-		self.bounds = Rect(0, 0, 90, 25)
+		self.height = 25
 		self.icon = None
 
 	def event(self):

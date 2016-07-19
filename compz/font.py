@@ -4,6 +4,8 @@ from .gfx import *
 
 
 class Font:
+	# horrible hack for issue #1
+	first = True
 
 	def __init__(self, path=None):
 		self.id = 0 if path is None else blf.load(path)
@@ -29,7 +31,16 @@ class Font:
 		blf.size(self.id, int(self.size), 72)
 
 		glPushMatrix()
-		glTranslatef(0, h, 0)
+		glLoadIdentity()
+		# horrible hack for issue #1
+		if Font.first:
+			glTranslatef(0, h / 2 + 4, 0)
+			Font.first = False
+		else:
+			glTranslatef(0, h, 0)
 		glScalef(1, -1, 1)
 		blf.draw(self.id, text)
 		glPopMatrix()
+
+		if self.shadowed:
+			blf.disable(self.id, blf.SHADOW)

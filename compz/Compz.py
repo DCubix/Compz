@@ -4,6 +4,7 @@ from bge import logic
 from .panel import *
 from .component import *
 from .gfx import *
+from .font import *
 
 
 class Compz:
@@ -42,6 +43,7 @@ class Compz:
 					continue
 			comp.draw()
 			comp.endDraw()
+		Font.first = True
 
 	def event(self):
 		comps = sorted(self.components, key=lambda x: isinstance(x, Panel))
