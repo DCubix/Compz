@@ -38,10 +38,15 @@ class Entry(Component):
 			_, h = self.style.font.measure("E]")
 			h2 = b.height / 2 - h / 2
 
+			gfx = self.system.gfx
+
 			glColor4f(*self.foreColor)
 			offx = 0
 			i = 0
 			cx = 0
+
+			gfx.clipBegin(b.x + 4, b.y + 4, b.width - 8, b.height - 8)
+
 			for c in self.text:
 				if not self.masked:
 					cw, _ = self.style.font.measure(c)
@@ -58,6 +63,8 @@ class Entry(Component):
 
 			if self.state == COMP_STATE_CLICK and self.__blink:
 				self.style.font.draw("|", b.x + 5 + cx, b.y + h2 - 2)
+
+			gfx.clipEnd()
 
 	def update(self):
 		Component.update(self)

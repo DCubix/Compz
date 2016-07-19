@@ -10,5 +10,5 @@ class LayoutBase:
 	def apply(self, comp):
 		pass
 
-	def init(self):
+	def reset(self):
 		pass

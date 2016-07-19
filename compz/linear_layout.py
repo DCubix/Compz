@@ -13,7 +13,7 @@ class LinearLayout(LayoutBase):
 		self.orientation = ITEM_ORI_VERTICAL
 		self.__h = 0
 
-	def init(self):
+	def reset(self):
 		self.__h = 0
 
 	def apply(self, comp):

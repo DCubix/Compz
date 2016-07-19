@@ -20,19 +20,37 @@ class ColorPicker(Component):
 		self.__center = [0, 0]
 		self.events.register(EV_COLOR_CHANGED)
 
-	def __draw_semi_circle__(self, radius):
+	def __draw_circle_wire__(self, radius, steps=32):
+		glColor3f(0, 0, 0)
+		glBegin(GL_LINE_LOOP)
+
+		_s = int(360 / steps)
+
+		for angle in range(0, 360 + _s, _s):
+			glVertex2f(int(cos(radians(angle)) * radius), int(sin(radians(angle)) * radius))
+		glEnd()
+
+	def __draw_semi_circle__(self, radius, steps=32):
 		v = self._value
+		glEnable(GL_POLYGON_SMOOTH)
+		glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST)
+
 		glBegin(GL_TRIANGLE_FAN)
 		glColor3f(v, v, v)
 		glVertex2f(0, 0)
-		for angle in range(0, 364, 4):
+
+		_s = int(360 / steps)
+
+		for angle in range(0, 360 + _s, _s):
 			r, g, b = csys.hsv_to_rgb(angle / 360, 1.0, 1.0)
 			glColor3f(r * v, g * v, b * v)
-			glVertex2f(int(cos(radians(angle)) * radius),
-				int(sin(radians(angle)) * radius))
+			glVertex2f(int(cos(radians(angle)) * radius), int(sin(radians(angle)) * radius))
 		glEnd()
+		glDisable(GL_POLYGON_SMOOTH)
 
 	def __draw_cursor__(self, x, y, s=7):
+		glEnable(GL_BLEND)
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 		glEnable(GL_POINT_SMOOTH)
 		glColor3f(0.1, 0.1, 0.1)
 		glPointSize(s)
@@ -40,11 +58,12 @@ class ColorPicker(Component):
 		glVertex2f(x, y)
 		glEnd()
 		glColor3f(0.9, 0.9, 0.9)
-		glPointSize(s - 1)
+		glPointSize(s - 1.5)
 		glBegin(GL_POINTS)
 		glVertex2f(x, y)
 		glEnd()
 		glDisable(GL_POINT_SMOOTH)
+		glDisable(GL_BLEND)
 
 	def __update_color__(self):
 		r, g, b = csys.hsv_to_rgb(self._hue, self._saturation, self._value)
@@ -127,14 +146,23 @@ class ColorPicker(Component):
 		glPushMatrix()
 		glTranslatef(x, y, 0)
 		self.__draw_semi_circle__(radius)
+		self.__draw_circle_wire__(radius)
 
 		glPopMatrix()
 
 		self.__draw_cursor__(cx, cy)
 
 		r, g, b = self._color
-		self.system.gfx.drawQuad(self.x + 6, self.y + 6, 12, 12,
-								color=(r, g, b, 1))
+		glEnable(GL_BLEND)
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+		glEnable(GL_POINT_SMOOTH)
+		glColor3f(r, g, b)
+		glPointSize(12)
+		glBegin(GL_POINTS)
+		glVertex2f(self.x + 12, self.y + 12)
+		glEnd()
+		glDisable(GL_POINT_SMOOTH)
+		glDisable(GL_BLEND)
 
 		self.system.gfx.clipEnd()
 

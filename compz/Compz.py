@@ -6,23 +6,15 @@ from .component import *
 from .gfx import *
 
 
-CZ_DRAW_MODE_VBO = 0
-CZ_DRAW_MODE_DL = 1
-
-
 class Compz:
 
-	def __init__(self, drawMode=CZ_DRAW_MODE_VBO):
-		if drawMode == CZ_DRAW_MODE_DL:
-			self.gfx = GFXdl()
-		else:
-			self.gfx = GFXvbo()
+	def __init__(self):
+		self.gfx = GFXvbo()
 
 		self.components = []
 		self.active = None
 
-		self.scene = logic.getCurrentScene()
-		self.scene.post_draw.append(self.__draw__)
+		self.scene = None
 
 		self.panelCount = 0
 
@@ -57,6 +49,10 @@ class Compz:
 			comp.event()
 
 	def update(self):
+		if self.scene is None:
+			self.scene = logic.getCurrentScene()
+			self.scene.post_draw.append(self.__draw__)
+
 		comps = sorted(self.components,
 			key=lambda x: isinstance(x, Panel), reverse=True)
 		for comp in comps:

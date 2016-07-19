@@ -21,7 +21,7 @@ class Panel(Component):
 		Component.update(self)
 
 		if self.layout is not None:
-			self.layout.init()
+			self.layout.reset()
 
 		for comp in self.children:
 			if self.layout is not None:

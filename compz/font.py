@@ -23,10 +23,11 @@ class Font:
 		else:
 			blf.disable(self.id, blf.SHADOW)
 
+		_, h = self.measure("E]")
+
 		blf.position(self.id, x, -y, 0)
 		blf.size(self.id, int(self.size), 72)
 
-		_, h = self.measure("E]")
 		glPushMatrix()
 		glTranslatef(0, h, 0)
 		glScalef(1, -1, 1)

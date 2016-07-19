@@ -68,6 +68,8 @@ class Slider(Component):
 			gfx.drawQuad(self._track.x, self._track.y,
 						self._track.width, self._track.height,
 						color=self.backColor)
+			gfx.drawWireQuad(self._track.x, self._track.y,
+						self._track.width, self._track.height)
 
 			if self.state == COMP_STATE_NORMAL:
 				gfx.drawQuad(px - 4, py - 8, 8, 16, color=self.backColor)

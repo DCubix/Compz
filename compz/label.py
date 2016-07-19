@@ -19,6 +19,8 @@ class Label(Component):
 
 	def draw(self):
 		if self.visible:
+			gfx = self.system.gfx
+
 			_, h = self.style.font.measure("E]")
 			w, _ = self.style.font.measure(self.text)
 			b = self.transformedBounds()
@@ -33,4 +35,6 @@ class Label(Component):
 			h2 = b.height / 2 - h / 2
 
 			glColor4f(*self.foreColor)
+			gfx.clipBegin(b.x + 2, b.y + 2, b.width - 4, b.height - 4)
 			self.style.font.draw(self.text, b.x + w2, b.y + h2)
+			gfx.clipEnd()

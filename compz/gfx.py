@@ -194,87 +194,12 @@ class GFXbase:
 			glDisable(GL_SCISSOR_TEST)
 
 
-class GFXdl(GFXbase):
-
-	def __init__(self):
-		self.quad = glGenLists(1)
-
-		glNewList(self.quad, GL_COMPILE)
-		glBegin(GL_QUADS)
-		glTexCoord2f(0.0, 0.0)
-		glVertex2f(0.0, 0.0)
-		glTexCoord2f(1.0, 0.0)
-		glVertex2f(1.0, 0.0)
-		glTexCoord2f(1.0, 1.0)
-		glVertex2f(1.0, 1.0)
-		glTexCoord2f(0.0, 1.0)
-		glVertex2f(0.0, 1.0)
-		glEnd()
-		glEndList()
-
-	def drawQuad(self, x, y, w, h, texture=None, color=(1, 1, 1, 1)):
-		glEnable(GL_BLEND)
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-		if texture is not None:
-			texture.bind()
-		glColor4f(*color)
-
-		glPushMatrix()
-		glMatrixMode(GL_MODELVIEW)
-		glLoadIdentity()
-		glTranslatef(x, y, 0.0)
-		glScalef(w, h, 1.0)
-		glCallList(self.quad)
-		glPopMatrix()
-		glDisable(GL_BLEND)
-
-	def drawQuadUV(self, x, y, w, h, texture=None,
-		uv=(0, 0, 1, 1), color=(1, 1, 1, 1)):
-		glEnable(GL_BLEND)
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-		if texture is not None:
-			texture.bind()
-		glColor4f(*color)
-
-		glPushMatrix()
-		glMatrixMode(GL_TEXTURE)
-		glLoadIdentity()
-		glTranslatef(uv[0], uv[1], 0.0)
-		glScalef(uv[2], uv[3], 1.0)
-		glMatrixMode(GL_MODELVIEW)
-		glLoadIdentity()
-		glTranslatef(x, y, 0.0)
-		glScalef(w, h, 1.0)
-		glCallList(self.quad)
-		glPopMatrix()
-		glDisable(GL_BLEND)
-
-	def __del__(self):
-		glDeleteLists(self.quad, 1)
-
-
-class Glyph:
-
-	def __init__(self):
-		self.texture = None
-		self.uv = [0, 0, 1, 1]
-		self.position = [0, 0]
-		self.scale = [1, 1]
-		self.color = (1, 1, 1, 1)
-		self.tl = None
-		self.tr = None
-		self.bl = None
-		self.br = None
-
-
 class GFXvbo(GFXbase):
 
 	def __init__(self):
 		self.vbo = 0
 		self.uv = 0
 		self.program = 0
-		self._glyphs = []
-		self._batches = []
 
 		verts = [
 			0, 0, 0,
@@ -334,7 +259,7 @@ class GFXvbo(GFXbase):
 		glDeleteShader(vsID)
 		glDeleteShader(fsID)
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0)
+		#glBindBuffer(GL_ARRAY_BUFFER, 0)
 
 	def set2D(self):
 		width = render.getWindowWidth()
@@ -414,5 +339,5 @@ class GFXvbo(GFXbase):
 		self.setUV(0, 0, 1, 1)
 
 	def __del__(self):
-		glDeleteBuffers([self.vbo, self.uv])
+		glDeleteBuffers([self.vbo, self.uv, self.ibo])
 		glDeleteProgram(self.program)
