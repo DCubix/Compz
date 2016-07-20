@@ -1,2 +1,5 @@
+.html
 .pyc
 __pycache__
+build
+docs/build
