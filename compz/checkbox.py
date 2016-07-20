@@ -4,7 +4,7 @@ from .gfx import *
 from .rect import *
 
 
-EV_CHECKBOX_STATE_CHANGED = 8
+EV_CHECK_STATE_CHANGED = 8
 
 
 class CheckBox(Component):
@@ -15,7 +15,7 @@ class CheckBox(Component):
 		self.text = text
 		self.height = 18
 		self._sz = [16, 16]
-		self.events.register(EV_CHECKBOX_STATE_CHANGED)
+		self.events.register(EV_CHECK_STATE_CHANGED)
 
 	@property
 	def selected(self):
@@ -25,7 +25,7 @@ class CheckBox(Component):
 	def selected(self, v):
 		if v != self._selected:
 			self._selected = v
-			self.events.call(EV_CHECKBOX_STATE_CHANGED, self)
+			self.events.call(EV_CHECK_STATE_CHANGED, self)
 
 	def draw(self):
 		if self.visible:

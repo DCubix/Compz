@@ -22,4 +22,6 @@ from .slider import *
 from .panel import *
 from .image import *
 from .checkbox import *
+from .radio_group import *
+from .radio import *
 from .colorpicker import *
