@@ -42,6 +42,13 @@ class Compz:
 				if not comp.parent.visible:
 					continue
 			comp.draw()
+
+		for comp in comps:
+			if not comp.visible:
+				continue
+			if comp.parent is not None:
+				if not comp.parent.visible:
+					continue
 			comp.endDraw()
 		Font.first = True
 

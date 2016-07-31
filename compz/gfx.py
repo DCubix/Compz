@@ -339,5 +339,5 @@ class GFXvbo(GFXbase):
 		self.setUV(0, 0, 1, 1)
 
 	def __del__(self):
-		glDeleteBuffers([self.vbo, self.uv, self.ibo])
+		glDeleteBuffers([self.vbo, self.uv])
 		glDeleteProgram(self.program)
