@@ -68,6 +68,19 @@ class List(Component):
 
 			if GFX_mouseClick(events.LEFTMOUSE):
 				if self.state == COMP_STATE_HOVER:
+					b = self.transformedBounds()
+					yoff = b.y - self.itemHeight
+					for i in range(len(self.items)):
+						if yoff + self.itemHeight > b.y + b.height:
+							break
+						ir = Rect(b.x, yoff, b.width, self.itemHeight)
+						if ir.hasPoint(mx, my):
+							if self.selectedIndex != i:
+								self.selectedIndex = i
+								self.events.call(EV_LIST_ITEM_SELECTED, self)
+							break
+						yoff += self.itemHeight
+						self.__y = yoff
 					self.state = COMP_STATE_CLICK
 
 			if GFX_mouseRelease(events.LEFTMOUSE):
@@ -75,20 +88,6 @@ class List(Component):
 					if bounds.hasPoint(mx, my):
 						self.state = COMP_STATE_HOVER
 						self.events.call(EV_MOUSE_CLICK, self)
-
-						b = self.transformedBounds()
-						yoff = b.y - self.itemHeight
-						for i in range(len(self.items)):
-							if yoff + self.itemHeight > b.y + b.height:
-								break
-							ir = Rect(b.x, yoff, b.width, self.itemHeight)
-							if ir.hasPoint(mx, my):
-								if self.selectedIndex != i:
-									self.selectedIndex = i
-									self.events.call(EV_LIST_ITEM_SELECTED, self)
-								break
-							yoff += self.itemHeight
-							self.__y = yoff
 				else:
 					self.state = COMP_STATE_NORMAL
 				self.events.call(EV_MOUSE_RELEASE, self)

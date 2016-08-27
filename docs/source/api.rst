@@ -7,6 +7,7 @@ API Documentation
    Compz
    component
    panel
+   list
    button
    label
    entry
