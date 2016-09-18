@@ -4,9 +4,6 @@ from .radio import *
 from .linear_layout import *
 
 
-EV_OPTION_SELECTED = 10
-
-
 class RadioGroup(Panel):
 
 	def __init__(self, radioStyle=None):
@@ -14,8 +11,6 @@ class RadioGroup(Panel):
 		self.selectedIndex = -1
 		self.radioStyle = radioStyle
 		self.previous = None
-
-		self.events.register(EV_OPTION_SELECTED)
 
 	def addComp(self, comp):
 		pass

@@ -3,7 +3,10 @@ Compz
 
 .. module:: compz
 
-.. class:: Compz
+.. class:: Compz([style=None])
+
+	:arg style: Style for all Components
+	:type style: :class:`~compz.Style`
 
 	Core Compz class
 	

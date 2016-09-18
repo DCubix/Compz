@@ -17,8 +17,3 @@ CheckBox
 		Checkbox status
 		
 		:type: bool
-
-Constants
----------
-
-.. data:: EV_CHECK_STATE_CHANGED

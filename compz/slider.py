@@ -6,9 +6,6 @@ from .rect import *
 from .gfx import *
 
 
-EV_SLIDER_VALUE_CHANGE = 7
-
-
 class Slider(Component):
 
 	def __init__(self, _min=0, _max=1, style=None):
@@ -20,8 +17,11 @@ class Slider(Component):
 		self._mx = 0
 		self._track = Rect(0, 0, 1, 1)
 		self.precision = 1
+		self.pointer_size = [16, 16]
 
-		self.events.register(EV_SLIDER_VALUE_CHANGE)
+	@property
+	def type(self):
+		return COMP_TYPE_SLIDER
 
 	@property
 	def value(self):
@@ -31,17 +31,13 @@ class Slider(Component):
 	def value(self, v):
 		if self._value != v:
 			self._value = round(v, self.precision)
-			self.events.call(EV_SLIDER_VALUE_CHANGE, self)
+			self.events.call(EV_PROPERTY_CHANGE, self)
 
 	def draw(self):
-		tex = None
-		o = 4
-		s = 16
 		x, y = self.position.x, self.position.y
 		w, h = self.bounds.width, self.bounds.height
 
-		valid = self.style is not None and \
-				self.style.textures[COMP_STATE_NORMAL] is not None
+		valid = self.style is not None
 
 		if self.parent is not None:
 			b = self.parent.transformedBounds()
@@ -49,59 +45,34 @@ class Slider(Component):
 
 		px = self._mx + x
 		py = y + h / 2
+		gfx = self.system.gfx
 		if valid:
 			o = self.style.offset
-			s = self.style.size
-			track = self.style.textures["custom"]
-			self.system.gfx.draw9Patch(self._track.x, self._track.y,
-										self._track.width, self._track.height,
-										o, s, t=track)
+			tex = self.style.skin
+			region = self.style.getTextureRegion(self.type, self.state)
+			trackregion = self.style.getTextureRegion(self.type, COMP_STATE_CUSTOM)
+			gfx.draw9Patch(self._track.x, self._track.y,
+							self._track.width, self._track.height,
+							o, texture=tex, uv=trackregion.data)
 
-			pointer = self.style.textures[self.state]
-			self.system.gfx.drawQuad(px - pointer.size[0] / 2,
-									py - pointer.size[1] / 2,
-									pointer.size[0], pointer.size[1],
-									texture=pointer)
+			pw, ph = self.pointer_size
+			gfx.drawQuadUV(px - pw / 2, py - ph / 2, pw, ph, texture=tex, uv=region.data)
 		else:
-			gfx = self.system.gfx
-
-			gfx.drawQuad(self._track.x, self._track.y,
-						self._track.width, self._track.height,
-						color=self.backColor)
-			gfx.drawWireQuad(self._track.x, self._track.y,
-						self._track.width, self._track.height)
-
-			if self.state == COMP_STATE_NORMAL:
-				gfx.drawQuad(px - 4, py - 8, 8, 16, color=self.backColor)
-			elif self.state == COMP_STATE_HOVER:
-				c = self.backColor
-				gfx.drawQuad(px - 4, py - 8, 8, 16,
-												color=(c[0] + 0.2, c[1] + 0.2,
-												c[2] + 0.2, c[3]))
-			elif self.state == COMP_STATE_CLICK:
-				c = self.backColor
-				gfx.drawQuad(px - 4, py - 8, 8, 16,
-												color=(c[0] - 0.2, c[1] - 0.2,
-												c[2] - 0.2, c[3]))
-			elif self.state == COMP_STATE_INACTIVE:
-				c = self.backColor
-				gfx.drawQuad(px - 4, py - 8, 8, 16,
-												color=(c[0] - 0.4, c[1] - 0.4,
-												c[2] - 0.4, c[3]))
-			gfx.drawWireQuad(px - 4, py - 8, 8, 16)
+			print("Could NOT draw Component. You have to specify a Style")
 
 	def event(self):
 		if self.visible and self.enabled:
 			bounds = self.transformedBounds()
 			mx, my = GFX_mousePosition()
+			hpw = self.pointer_size[0] / 2
 
-			self._track = track = Rect(bounds.x + 8,
-										bounds.y + bounds.height / 2 - 4,
-										bounds.width - 16, 8)
+			self._track = track = Rect(bounds.x + hpw,
+										bounds.y + bounds.height / 2 - hpw / 2,
+										bounds.width - self.pointer_size[0], hpw)
 			px = mx - track.x
 
 			self._mx = abs(((self.minimum + self.value) * track.width) /
-							((self.maximum - self.minimum) + 0.0001)) + 8
+							((self.maximum - self.minimum) + 0.0001)) + hpw
 
 			if bounds.hasPoint(mx, my):
 				if self.state == COMP_STATE_NORMAL:

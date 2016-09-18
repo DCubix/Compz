@@ -4,9 +4,6 @@ from .gfx import *
 from .rect import *
 
 
-EV_CHECK_STATE_CHANGED = 8
-
-
 class CheckBox(Component):
 
 	def __init__(self, text="CheckBox", style=None):
@@ -14,8 +11,11 @@ class CheckBox(Component):
 		self._selected = False
 		self.text = text
 		self.height = 18
-		self._sz = [16, 16]
-		self.events.register(EV_CHECK_STATE_CHANGED)
+		self.check_size = [16, 16]
+
+	@property
+	def type(self):
+		return COMP_TYPE_CHECK
 
 	@property
 	def selected(self):
@@ -25,39 +25,33 @@ class CheckBox(Component):
 	def selected(self, v):
 		if v != self._selected:
 			self._selected = v
-			self.events.call(EV_CHECK_STATE_CHANGED, self)
+			self.events.call(EV_PROPERTY_CHANGE, self)
 
 	def draw(self):
 		if self.visible:
-			valid = self.style is not None and \
-				self.style.textures[COMP_STATE_NORMAL] is not None
+			valid = self.style is not None
 
-			_, h = self.style.font.measure("E]")
+			sw, sh = self.check_size
+			_, h = self.style.font.measure("E|]")
 			b = self.transformedBounds()
 			if valid:
+				y = b.y + b.height / 2 - sh / 2
 				o = self.style.offset
-				s = self.style.size
-				tex = self.style.textures[self.state]
-				self.system.gfx.draw9Patch(b.x + 4,
-											b.y + b.height / 2 - self._sz[1] / 2,
-											self._sz[0], self._sz[1], o, s,
-											t=tex)
+				region = self.style.getTextureRegion(self.type, self.state)
+				tex = self.style.skin
+
+				self.system.gfx.draw9Patch(b.x + 4, y, sw, sh, o,
+											texture=tex, uv=region.data)
 				if self.selected:
-					t = self.style.textures["custom"]
-					self.system.gfx.drawQuad(b.x + 4,
-										b.y + b.height / 2 - self._sz[1] / 2,
-										self._sz[0], self._sz[1], texture=t)
+					check_region = self.style.getTextureRegion(self.type, COMP_STATE_CUSTOM)
+					self.system.gfx.drawQuadUV(b.x + 4, y, sw, sh,
+												texture=tex, uv=check_region.data)
 			else:
-				Component.draw(self)
-				if self.selected:
-					self.system.gfx.drawQuad(b.x + 4,
-										b.y + b.height / 2 - self._sz[1] / 2,
-										self._sz[0], self._sz[1],
-										color=(0, 0, 0, 1))
+				print("Could NOT draw CheckBox. You have to specify a Style")
 
 			glColor4f(*self.foreColor)
 			h2 = b.height / 2 - h / 2
-			self.style.font.draw(self.text, b.x + self._sz[0] + 6, b.y + h2)
+			self.style.font.draw(self.text, b.x + sw + 6, b.y + h2)
 
 	def event(self):
 		if self.visible and self.enabled:

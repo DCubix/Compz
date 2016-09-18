@@ -53,3 +53,4 @@ Constants
 .. data:: EV_KEY_PRESS
 .. data:: EV_KEY_RELEASE
 .. data:: EV_KEY_DOWN
+.. data:: EV_PROPERTY_CHANGE

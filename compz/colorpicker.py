@@ -5,9 +5,6 @@ from math import sin, cos, radians, sqrt, atan2, pi
 import colorsys as csys
 
 
-EV_COLOR_CHANGED = 9
-
-
 class ColorPicker(Component):
 
 	def __init__(self, style=None):
@@ -18,7 +15,6 @@ class ColorPicker(Component):
 		self._color = (0, 0, 0)
 		self.__cursor = [0, 0]
 		self.__center = [0, 0]
-		self.events.register(EV_COLOR_CHANGED)
 
 	def __draw_circle_wire__(self, radius, steps=32):
 		glColor3f(0, 0, 0)
@@ -68,7 +64,7 @@ class ColorPicker(Component):
 	def __update_color__(self):
 		r, g, b = csys.hsv_to_rgb(self._hue, self._saturation, self._value)
 		self._color = (r, g, b)
-		self.events.call(EV_COLOR_CHANGED, self)
+		self.events.call(EV_PROPERTY_CHANGE, self)
 
 	def __update_cursor__(self, mx, my):
 		dx = mx - self.__center[0]

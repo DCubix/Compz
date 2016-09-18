@@ -91,7 +91,7 @@ def GFX_keyReleased(btn, state=logic.KX_INPUT_JUST_RELEASED):
 
 def GFX_getAllKeys():
 	keys = {}
-	for k, v in events.__dict__.items():
+	for k, v in list(events.__dict__.items()):
 		if not k.startswith("__"):
 			if k not in ["EventToCharacter", "EventToString",
 							"RETKEY", "WHEELUPMOUSE",
@@ -141,31 +141,82 @@ class GFXbase:
 		glEnd()
 		glLineWidth(1)
 
-	def draw9Patch(self, x, y, w, h, o, s, t=None, col=(1, 1, 1, 1)):
-		os = o / s
+	def draw9Patch(self, x, y, w, h, offset, texture=None, col=(1, 1, 1, 1), uv=[1, 1, 1, 1]):
+		osx = offset / texture.size[0]
+		osy = offset / texture.size[1]
+		o = offset
 
 		# Top left
-		self.drawQuadUV(x, y, o, o, t, (0, 0, os, os), col)
+		self.drawQuadUV(
+			x, y, o, o,
+			texture,
+			(uv[0], uv[1], osx, osy),
+			col
+		)
+
 		# Top mid
-		self.drawQuadUV(x + o, y, w - o * 2, o, t, (os, 0, 1 - os * 2, os), col)
+		self.drawQuadUV(
+			x + o, y, w - (o * 2), o,
+			texture,
+			(uv[0] + osx, uv[1], uv[2] - (osx * 2), osy),
+			col
+		)
+
 		# Top right
-		self.drawQuadUV(x + w - o, y, o, o, t, (1 - os, 0, 1, os), col)
+		self.drawQuadUV(
+			x + (w - o), y, o, o,
+			texture,
+			(uv[0] + (uv[2] - osx), uv[1], osx, osy),
+			col
+		)
+
 		# Mid left
-		self.drawQuadUV(x, y + o, o, h - o * 2, t, (0, os, os, 1 - os), col)
+		self.drawQuadUV(
+			x, y + o, o, h - (o * 2),
+			texture,
+			(uv[0], uv[1] + osy, osx, uv[3] - (osy * 2)),
+			col
+		)
+
 		# Middle
-		self.drawQuadUV(x + o, y + o, w - o * 2, h - o * 2, t,
-			(os, os, 1 - os, 1 - os), col)
+		self.drawQuadUV(
+			x + o, y + o, w - o * 2, h - o * 2,
+			texture,
+			(uv[0] + osx, uv[1] + osy, uv[2] - (osx * 2), uv[3] - (osy * 2)),
+			col
+		)
+
 		# Mid right
-		self.drawQuadUV(x + w - o, y + o, o, h - o * 2, t,
-			(1 - os, os, 1, 1 - os), col)
+		self.drawQuadUV(
+			x + (w - o), y + o, o, h - (o * 2),
+			texture,
+			(uv[0] + (uv[2] - osx), uv[1] + osy, osx, uv[3] - (osy * 2)),
+			col
+		)
+
 		# Bottom left
-		self.drawQuadUV(x, y + h - o, o, o, t, (0, 1 - os, os, 1), col)
+		self.drawQuadUV(
+			x, y + h - o, o, o,
+			texture,
+			(uv[0], uv[1] + (uv[3] - osy), osx, osy),
+			col
+		)
+
 		# Bottom mid
-		self.drawQuadUV(x + o, y + h - o, w - o * 2, o, t,
-			(os, 1 - os, 1 - os * 2, 1), col)
+		self.drawQuadUV(
+			x + o, y + h - o, w - o * 2, o,
+			texture,
+			(uv[0] + osx, uv[1] + (uv[3] - osy), uv[2] - (osx * 2), osy),
+			col
+		)
+
 		# Bottom right
-		self.drawQuadUV(x + w - o, y + h - o, o, o, t,
-			(1 - os, 1 - os, 1, 1), col)
+		self.drawQuadUV(
+			x + w - o, y + h - o, o, o,
+			texture,
+			(uv[0] + (uv[2] - osx), uv[1] + (uv[3] - osy), osx, osy),
+			col
+		)
 
 	def clipBegin(self, x, y, w, h, padding=[0, 0, 0, 0]):
 		vp = glGetIntegerv(GL_VIEWPORT)
@@ -197,9 +248,11 @@ class GFXbase:
 class GFXvbo(GFXbase):
 
 	def __init__(self):
-		self.vbo = 0
-		self.uv = 0
+		#self.vbo = 0
+		#self.uv = 0
 		self.program = 0
+		self.imageLOC = 0
+		self.hasimageLOC = 0
 
 		verts = [
 			0, 0, 0,
@@ -212,11 +265,11 @@ class GFXvbo(GFXbase):
 
 		self.vertBuff = Buffer(GL_FLOAT, len(verts), verts)
 
-		self.vbo = glGenBuffer()
-		glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-		glBufferData(GL_ARRAY_BUFFER, len(verts) * 4, self.vertBuff, GL_STATIC_DRAW)
+		#self.vbo = glGenBuffer()
+		#glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+		#glBufferData(GL_ARRAY_BUFFER, len(verts) * 4, self.vertBuff, GL_STATIC_DRAW)
 
-		self.uv = glGenBuffer()
+		#self.uv = glGenBuffer()
 		self.setUV(0, 0, 1, 1)
 
 		vsID = glCreateShader(GL_VERTEX_SHADER)
@@ -259,6 +312,9 @@ class GFXvbo(GFXbase):
 		glDeleteShader(vsID)
 		glDeleteShader(fsID)
 
+		self.imageLOC = glGetUniformLocation(self.program, "image")
+		self.hasimageLOC = glGetUniformLocation(self.program, "hasImage")
+
 		#glBindBuffer(GL_ARRAY_BUFFER, 0)
 
 	def set2D(self):
@@ -275,20 +331,20 @@ class GFXvbo(GFXbase):
 		glMatrixMode(GL_MODELVIEW)
 		glLoadIdentity()
 
-	def setUV(self, uvx1, uvy1, uvx2, uvy2):
+	def setUV(self, x, y, w, h):
 		uvs = [
-			uvx1, uvy1,
-			uvx1, uvy2,
-			uvx2, uvy1,
-			uvx2, uvy2,
-			uvx2, uvy1,
-			uvx1, uvy2
+			x, y,
+			x, y + h,
+			x + w, y,
+			x + w, y + h,
+			x + w, y,
+			x, y + h
 		]
 		self.uvBuff = Buffer(GL_FLOAT, len(uvs), uvs)
 
-		glBindBuffer(GL_ARRAY_BUFFER, self.uv)
-		glBufferData(GL_ARRAY_BUFFER, len(uvs) * 4, self.uvBuff, GL_STATIC_DRAW)
-		glBindBuffer(GL_ARRAY_BUFFER, 0)
+		#glBindBuffer(GL_ARRAY_BUFFER, self.uv)
+		#glBufferSubData(GL_ARRAY_BUFFER, 0, len(uvs) * 4, self.uvBuff)
+		#glBindBuffer(GL_ARRAY_BUFFER, 0)
 
 	def drawQuad(self, x, y, w, h, texture=None, color=(1, 1, 1, 1)):
 		glEnable(GL_BLEND)
@@ -305,19 +361,17 @@ class GFXvbo(GFXbase):
 
 		glUseProgram(self.program)
 
-		imageLOC = glGetUniformLocation(self.program, "image")
-		hasimageLOC = glGetUniformLocation(self.program, "hasImage")
-
 		if texture is not None:
 			texture.bind(0)
-			glUniform1i(imageLOC, 0)
-			glUniform1i(hasimageLOC, 1)
+			glUniform1i(self.imageLOC, 0)
+			glUniform1i(self.hasimageLOC, 1)
 		else:
-			glUniform1i(hasimageLOC, 0)
+			glUniform1i(self.hasimageLOC, 0)
 
 		glEnableClientState(GL_VERTEX_ARRAY)
-		glVertexPointer(3, GL_FLOAT, 0, self.vertBuff)
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY)
+
+		glVertexPointer(3, GL_FLOAT, 0, self.vertBuff)
 		glTexCoordPointer(2, GL_FLOAT, 0, self.uvBuff)
 
 		glDrawArrays(GL_TRIANGLES, 0, 6)
@@ -327,7 +381,7 @@ class GFXvbo(GFXbase):
 
 		glPopMatrix()
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0)
+		#glBindBuffer(GL_ARRAY_BUFFER, 0)
 		glUseProgram(0)
 
 		glDisable(GL_BLEND)
@@ -339,5 +393,5 @@ class GFXvbo(GFXbase):
 		self.setUV(0, 0, 1, 1)
 
 	def __del__(self):
-		glDeleteBuffers([self.vbo, self.uv])
+		#glDeleteBuffers([self.vbo, self.uv])
 		glDeleteProgram(self.program)

@@ -72,7 +72,7 @@ class ImageTexture(Texture):
 		data = img.image
 		if data is None:
 			self.valid = False
-			#print("Unabled to load the image", image)
+			#print("Unable to load the image", image)
 			return
 
 		# Upload the texture data

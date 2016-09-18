@@ -9,26 +9,33 @@ from .font import *
 
 class Compz:
 
-	def __init__(self):
+	def __init__(self, style=None):
 		self.gfx = GFXvbo()
 
 		self.components = []
 		self.active = None
 
 		self.scene = None
+		self.__gstyle = style
 
-		self.panelCount = 0
+		self.current_id = 0
 
-	def setStyle(self, style):
+	@property
+	def style(self):
+		return self.__gstyle
+
+	@style.setter
+	def style(self, v):
+		self.__gstyle = v
 		for comp in self.components:
-			comp.style = style
+			comp.style = self.__gstyle
 
 	def addComp(self, comp):
-		if isinstance(comp, Panel):
-			self.panelCount += 1
-			comp.index = self.panelCount
 		comp.system = self
+		comp.style = self.style
+		comp.id = self.current_id
 		self.components.append(comp)
+		self.current_id += 1
 		return comp
 
 	def __draw__(self):
@@ -38,18 +45,18 @@ class Compz:
 		for comp in comps:
 			if not comp.visible:
 				continue
-			if comp.parent is not None:
-				if not comp.parent.visible:
-					continue
+			if comp.parent is not None and not comp.parent.visible:
+				continue
 			comp.draw()
 
 		for comp in comps:
 			if not comp.visible:
 				continue
-			if comp.parent is not None:
-				if not comp.parent.visible:
-					continue
-			comp.endDraw()
+			if comp.parent is not None and not comp.parent.visible:
+				continue
+			if not comp.finished:
+				comp.endDraw()
+
 		Font.first = True
 
 	def event(self):
@@ -70,3 +77,4 @@ class Compz:
 					continue
 			comp.update()
 		self.event()
+

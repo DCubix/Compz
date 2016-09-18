@@ -36,7 +36,3 @@ base: :class:`~compz.Component`
 		
 		:type: float 0-1
 
-Constants
----------
-
-.. data:: EV_COLOR_CHANGED

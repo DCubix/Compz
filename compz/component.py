@@ -8,16 +8,24 @@ from .style import *
 from .event import *
 
 
-COMP_STATE_NORMAL = "normal"
-COMP_STATE_HOVER = "hover"
-COMP_STATE_CLICK = "clicked"
-COMP_STATE_INACTIVE = "inactive"
+COMP_STATE_NORMAL = 0
+COMP_STATE_CLICK = 1
+COMP_STATE_HOVER = 2
+COMP_STATE_INACTIVE = 3
+COMP_STATE_CUSTOM = 4
+
+COMP_TYPE_PANEL = 0
+COMP_TYPE_BUTTON = 1
+COMP_TYPE_CHECK = 2
+COMP_TYPE_RADIO = 3
+COMP_TYPE_ENTRY = 4
+COMP_TYPE_SLIDER = 5
 
 
 class Component:
 
 	def __init__(self, style=None):
-		self.index = 0
+		self.id = 0
 		self.bounds = Rect(0, 0, 100, 100)
 		self.parent = None
 		self.backColor = (0.6, 0.6, 0.6, 1)
@@ -46,6 +54,12 @@ class Component:
 
 		self.drawBackground = True
 		self._prevTex = None
+
+		self.finished = False
+
+	@property
+	def type(self):
+		return COMP_TYPE_PANEL
 
 	@property
 	def position(self):
@@ -120,7 +134,6 @@ class Component:
 
 	def update(self):
 		if self.visible and self.enabled:
-			pindex = self.parent.index if self.parent is not None else 1
 			bounds = self.transformedBounds()
 			mx, my = GFX_mousePosition()
 			if bounds.hasPoint(mx, my):
@@ -138,12 +151,10 @@ class Component:
 		if not self.drawBackground:
 			return
 
-		tex = None
 		x, y = self.position.x, self.position.y
 		w, h = self.bounds.width, self.bounds.height
 
-		valid = self.style is not None and \
-				self.style.textures[COMP_STATE_NORMAL] is not None
+		valid = self.style is not None
 
 		if self.parent is not None:
 			b = self.parent.transformedBounds()
@@ -151,29 +162,13 @@ class Component:
 
 		if valid:
 			o = self.style.offset
-			s = self.style.size
-			tex = self.style.textures[self.state]
-			if tex is None or not tex.valid:
-				tex = self.style.textures["normal"]
-			self.system.gfx.draw9Patch(x, y, w, h, o, s, t=tex)
+			region = self.style.getTextureRegion(self.type, self.state)
+			tex = self.style.skin
+			self.system.gfx.draw9Patch(x, y, w, h, o, texture=tex, uv=region.data)
 		else:
-			gfx = self.system.gfx
-			if self.state == COMP_STATE_NORMAL:
-				gfx.drawQuad(x, y, w, h, color=self.backColor)
-			elif self.state == COMP_STATE_HOVER:
-				c = self.backColor
-				gfx.drawQuad(x, y, w, h, color=(c[0] + 0.2, c[1] + 0.2,
-												c[2] + 0.2, c[3]))
-			elif self.state == COMP_STATE_CLICK:
-				c = self.backColor
-				gfx.drawQuad(x, y, w, h, color=(c[0] - 0.2, c[1] - 0.2,
-												c[2] - 0.2, c[3]))
-			elif self.state == COMP_STATE_INACTIVE:
-				c = self.backColor
-				gfx.drawQuad(x, y, w, h, color=(c[0] - 0.4, c[1] - 0.4,
-												c[2] - 0.4, c[3]))
-			gfx.drawWireQuad(x, y, w, h)
+			print("Could NOT draw Component. You have to specify a Style")
 
 	def endDraw(self):
 		if self.parent is not None:
 			self.system.gfx.clipEnd()
+			self.finished = True

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from .component import *
 from .checkbox import *
 from .gfx import *
 from .rect import *
@@ -9,6 +10,10 @@ class Radio(CheckBox):
 	def __init__(self, text="CheckBox", style=None):
 		super(Radio, self).__init__(text, style)
 		self.group = None
+
+	@property
+	def type(self):
+		return COMP_TYPE_RADIO
 
 	def event(self):
 		if self.visible and self.enabled:
@@ -37,7 +42,7 @@ class Radio(CheckBox):
 							self.selected = True
 							self.group.previous = self
 							self.group.selectedIndex = self.group.children.index(self)
-							self.group.events.call(10, self.group)
+							self.group.events.call(EV_PROPERTY_CHANGE, self.group)
 						else:
 							self.selected = not self.selected
 						self.events.call(EV_MOUSE_CLICK, self)

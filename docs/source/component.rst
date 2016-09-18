@@ -169,3 +169,4 @@ Constants
 .. data:: COMP_STATE_HOVER
 .. data:: COMP_STATE_CLICK
 .. data:: COMP_STATE_INACTIVE
+.. data:: COMP_STATE_CUSTOM

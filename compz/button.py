@@ -16,6 +16,10 @@ class Button(Component):
 		self.height = 25
 		self.icon = None
 
+	@property
+	def type(self):
+		return COMP_TYPE_BUTTON
+
 	def event(self):
 		if self.visible and self.enabled:
 			bounds = self.transformedBounds()
@@ -46,11 +50,9 @@ class Button(Component):
 		Component.draw(self)
 
 		if self.visible:
-			_, h = self.style.font.measure("E]")
+			_, h = self.style.font.measure("E|]")
 			w, _ = self.style.font.measure(self.text)
 			b = self.transformedBounds()
-
-			glColor4f(*self.foreColor)
 
 			w2 = b.width / 2 - w / 2
 			if self.icon is not None:
@@ -65,8 +67,9 @@ class Button(Component):
 					ix = b.x + b.width - iw - 6
 					w2 = 6
 
-				self.system.gfx.drawQuad(ix, b.y + b.height / 2 - ih / 2,
-											iw, ih, texture=tex)
+				self.system.gfx.drawQuad(ix, b.y + b.height / 2 - ih / 2, iw, ih, texture=tex)
 
 			h2 = b.height / 2 - h / 2
+
+			glColor4f(*self.foreColor)
 			self.style.font.draw(self.text, b.x + w2, b.y + h2)

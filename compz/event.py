@@ -6,6 +6,7 @@ EV_MOUSE_LEAVE = 3
 EV_KEY_PRESS = 4
 EV_KEY_RELEASE = 5
 EV_KEY_DOWN = 6
+EV_PROPERTY_CHANGE = 7
 
 
 class Event:
@@ -18,7 +19,8 @@ class Event:
 			EV_MOUSE_LEAVE: None,
 			EV_KEY_PRESS: None,
 			EV_KEY_RELEASE: None,
-			EV_KEY_DOWN: None
+			EV_KEY_DOWN: None,
+			EV_PROPERTY_CHANGE: None
 		}
 
 	def set(self, event, callback):

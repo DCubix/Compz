@@ -4,9 +4,6 @@ from .rect import *
 from .gfx import *
 
 
-EV_LIST_ITEM_SELECTED = 11
-
-
 class List(Component):
 
 	def __init__(self, style=None):
@@ -17,7 +14,6 @@ class List(Component):
 		self.__y = 0
 		self.width = 100
 		self.height = 120
-		self.events.register(EV_LIST_ITEM_SELECTED)
 
 	def draw(self):
 		if not self.visible:
@@ -29,16 +25,14 @@ class List(Component):
 
 		if self.selectedIndex != -1:
 			r = Rect(b.x + 1, self.__y, b.width - 2, self.itemHeight)
-			t = self.style.textures["custom"]
-			if t is not None:
-				o = self.style.offset
-				s = self.style.size
-				self.system.gfx.draw9Patch(r.x, r.y, r.width, r.height, o, s, t=t)
-			else:
-				self.system.gfx.drawQuad(r.x, r.y, r.width, r.height, color=(0, 0, 0, 0.7))
+			t = self.style.skin
+			reg = self.style.getTextureRegion(self.type, COMP_STATE_CUSTOM)
+
+			o = self.style.offset
+			self.system.gfx.draw9Patch(r.x, r.y, r.width, r.height, o, texture=t, uv=reg.data)
 
 		fnt = self.style.font
-		_, h = fnt.measure("E]")
+		_, h = fnt.measure("E|]")
 		centerY = self.itemHeight / 2 - h / 2
 
 		glColor4f(*self.foreColor)
@@ -69,18 +63,17 @@ class List(Component):
 			if GFX_mouseClick(events.LEFTMOUSE):
 				if self.state == COMP_STATE_HOVER:
 					b = self.transformedBounds()
-					yoff = b.y - self.itemHeight
+					yoff = b.y
 					for i in range(len(self.items)):
 						if yoff + self.itemHeight > b.y + b.height:
 							break
 						ir = Rect(b.x, yoff, b.width, self.itemHeight)
 						if ir.hasPoint(mx, my):
-							if self.selectedIndex != i:
-								self.selectedIndex = i
-								self.events.call(EV_LIST_ITEM_SELECTED, self)
+							self.selectedIndex = i
+							self.events.call(EV_PROPERTY_CHANGE, self)
 							break
 						yoff += self.itemHeight
-						self.__y = yoff
+					self.__y = yoff
 					self.state = COMP_STATE_CLICK
 
 			if GFX_mouseRelease(events.LEFTMOUSE):

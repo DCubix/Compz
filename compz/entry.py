@@ -21,6 +21,10 @@ class Entry(Component):
 		self.__t = Timer()
 
 	@property
+	def type(self):
+		return COMP_TYPE_ENTRY
+
+	@property
 	def text(self):
 		return self.__text
 
@@ -35,7 +39,7 @@ class Entry(Component):
 
 		if self.visible:
 			b = self.transformedBounds()
-			_, h = self.style.font.measure("E]")
+			_, h = self.style.font.measure("E|]")
 			h2 = b.height / 2 - h / 2
 
 			gfx = self.system.gfx
@@ -48,16 +52,14 @@ class Entry(Component):
 			gfx.clipBegin(b.x + 4, b.y + 4, b.width - 8, b.height - 8)
 
 			for c in self.text:
-				if not self.masked:
-					cw, _ = self.style.font.measure(c)
-					if i + 1 == self.__x:
-						cx = offx + cw
-					self.style.font.draw(c, b.x + 6 + offx, b.y + h2)
-				else:
-					cw, _ = self.style.font.measure("*")
-					if i + 1 == self.__x:
-						cx = offx + cw
-					self.style.font.draw("*", b.x + 6 + offx, b.y + h2)
+				char = c
+				if self.masked:
+					char = "*"
+
+				cw, _ = self.style.font.measure(char)
+				if i + 1 == self.__x:
+					cx = offx + cw
+				self.style.font.draw(char, b.x + 6 + offx, b.y + h2)
 				offx += cw
 				i += 1
 
@@ -131,7 +133,7 @@ class Entry(Component):
 						events.DELKEY)
 					self.__blink = True
 				else:
-					for k, v in GFX_SupportedKeys.items():
+					for k, v in list(GFX_SupportedKeys.items()):
 						if GFX_keyPressed(v):
 							key = events.EventToCharacter(v, shift)
 							s = self.text
