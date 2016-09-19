@@ -16,7 +16,7 @@ class ColorPicker(Component):
 		self.__cursor = [0, 0]
 		self.__center = [0, 0]
 
-	def __draw_circle_wire__(self, radius, steps=32):
+	def __draw_circle_wire__(self, radius, steps=24):
 		glColor3f(0, 0, 0)
 		glBegin(GL_LINE_LOOP)
 
@@ -26,10 +26,8 @@ class ColorPicker(Component):
 			glVertex2f(int(cos(radians(angle)) * radius), int(sin(radians(angle)) * radius))
 		glEnd()
 
-	def __draw_semi_circle__(self, radius, steps=32):
+	def __draw_semi_circle__(self, radius, steps=24):
 		v = self._value
-		glEnable(GL_POLYGON_SMOOTH)
-		glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST)
 
 		glBegin(GL_TRIANGLE_FAN)
 		glColor3f(v, v, v)
@@ -42,23 +40,20 @@ class ColorPicker(Component):
 			glColor3f(r * v, g * v, b * v)
 			glVertex2f(int(cos(radians(angle)) * radius), int(sin(radians(angle)) * radius))
 		glEnd()
-		glDisable(GL_POLYGON_SMOOTH)
 
 	def __draw_cursor__(self, x, y, s=7):
 		glEnable(GL_BLEND)
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-		glEnable(GL_POINT_SMOOTH)
 		glColor3f(0.1, 0.1, 0.1)
 		glPointSize(s)
 		glBegin(GL_POINTS)
 		glVertex2f(x, y)
 		glEnd()
 		glColor3f(0.9, 0.9, 0.9)
-		glPointSize(s - 1.5)
+		glPointSize(s - 2)
 		glBegin(GL_POINTS)
 		glVertex2f(x, y)
 		glEnd()
-		glDisable(GL_POINT_SMOOTH)
 		glDisable(GL_BLEND)
 
 	def __update_color__(self):
@@ -143,7 +138,6 @@ class ColorPicker(Component):
 		glTranslatef(x, y, 0)
 		self.__draw_semi_circle__(radius)
 		self.__draw_circle_wire__(radius)
-
 		glPopMatrix()
 
 		self.__draw_cursor__(cx, cy)
@@ -151,13 +145,11 @@ class ColorPicker(Component):
 		r, g, b = self._color
 		glEnable(GL_BLEND)
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-		glEnable(GL_POINT_SMOOTH)
 		glColor3f(r, g, b)
 		glPointSize(12)
 		glBegin(GL_POINTS)
 		glVertex2f(self.x + 12, self.y + 12)
 		glEnd()
-		glDisable(GL_POINT_SMOOTH)
 		glDisable(GL_BLEND)
 
 		self.system.gfx.clipEnd()

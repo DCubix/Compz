@@ -32,6 +32,7 @@ class Component:
 		self.foreColor = (0.9, 0.9, 0.9, 1)
 		self.system = None
 		self.events = Event()
+		self.name = ""
 
 		self.state = COMP_STATE_NORMAL
 

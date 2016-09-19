@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from bge import logic
+from bge import logic, render
 
 from .panel import *
 from .component import *
 from .gfx import *
 from .font import *
+from .loader import *
 
 
 class Compz:
@@ -20,6 +21,19 @@ class Compz:
 
 		self.current_id = 0
 
+	def get(self, name):
+		for comp in self.components:
+			if comp.name == name:
+				return comp
+		return None
+
+	def loadUI(self, filePath):
+		Loader(self, filePath)
+
+	def loadUIFromString(self, jsonString):
+		loader = Loader(self, None)
+		loader.fromString(jsonString)
+
 	@property
 	def style(self):
 		return self.__gstyle
@@ -31,17 +45,23 @@ class Compz:
 			comp.style = self.__gstyle
 
 	def addComp(self, comp):
-		comp.system = self
-		comp.style = self.style
-		comp.id = self.current_id
-		self.components.append(comp)
-		self.current_id += 1
+		if comp not in self.components:
+			comp.system = self
+			comp.style = self.style
+			comp.id = self.current_id
+			self.components.append(comp)
+			self.current_id += 1
 		return comp
 
 	def __draw__(self):
 		self.gfx.set2D()
 		comps = sorted(self.components,
 			key=lambda x: isinstance(x, Panel), reverse=True)
+		
+		width = render.getWindowWidth()
+		height = render.getWindowHeight()
+		self.gfx.clipBegin(0, 0, width, height)
+		
 		for comp in comps:
 			if not comp.visible:
 				continue
@@ -57,6 +77,7 @@ class Compz:
 			if not comp.finished:
 				comp.endDraw()
 
+		self.gfx.clipEnd()
 		Font.first = True
 
 	def event(self):

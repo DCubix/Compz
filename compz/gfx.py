@@ -121,7 +121,13 @@ class GFXbase:
 		glMatrixMode(GL_MODELVIEW)
 		glLoadIdentity()
 
+		glEnable(GL_POLYGON_SMOOTH)
+		glEnable(GL_LINE_SMOOTH)
 		glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST)
+		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
+
+		glEnable(GL_POINT_SMOOTH)
+		glEnable(GL_POINT_SPRITE)
 
 	def drawQuad(self, x, y, w, h, texture=None, color=(1, 1, 1, 1)):
 		pass
@@ -316,20 +322,6 @@ class GFXvbo(GFXbase):
 		self.hasimageLOC = glGetUniformLocation(self.program, "hasImage")
 
 		#glBindBuffer(GL_ARRAY_BUFFER, 0)
-
-	def set2D(self):
-		width = render.getWindowWidth()
-		height = render.getWindowHeight()
-
-		glDisable(GL_CULL_FACE)
-		glDisable(GL_LIGHTING)
-		glDisable(GL_DEPTH_TEST)
-
-		glMatrixMode(GL_PROJECTION)
-		glLoadIdentity()
-		gluOrtho2D(0, width, height, 0)
-		glMatrixMode(GL_MODELVIEW)
-		glLoadIdentity()
 
 	def setUV(self, x, y, w, h):
 		uvs = [

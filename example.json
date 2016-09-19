@@ -1,0 +1,96 @@
+{
+	"styles": {
+		"dark": {
+			"skin": "//skin.png"
+		}
+	},
+	"settings": {
+		"style": "dark",
+		"textColor": [1, 1, 1, 1]
+	},
+	"components": {
+		"mainPanel": {
+			"type": "Panel",
+			"position": [10, 10],
+			"size": [120, 300],
+			"fit": true,
+			"layout": {
+				"type": "Linear",
+				"orientation": "VERTICAL"
+			},
+			"parent": null
+		},
+		"lblTitle": {
+			"type": "Label",
+			"position": [0, 0],
+			"size": [0, 25],
+			"parent": "mainPanel",
+			"text": "Menu",
+			"textAlignment": "TEXT_ALIGN_CENTER"
+		},
+		"buttonPlay": {
+			"type": "Button",
+			"position": [0, 0],
+			"size": [0, 25],
+			"parent": "mainPanel",
+			"text": "Play",
+			"icon": {
+				"image": "//control_play.png",
+				"size": [16, 16]
+			},
+			"iconAlignment": "ICON_ALIGN_LEFT"
+		},
+		"buttonExit": {
+			"type": "Button",
+			"position": [0, 0],
+			"size": [0, 25],
+			"parent": "mainPanel",
+			"text": "Exit",
+			"textAlignment": "TEXT_ALIGN_RIGHT",
+			"icon": {
+				"image": "//door_out.png",
+				"size": [16, 16]
+			},
+			"iconAlignment": "ICON_ALIGN_LEFT"
+		},
+		"sliderMain": {
+			"type": "Slider",
+			"min": 0,
+			"max": 1,
+			"value": 0.5,
+			"precision": 1,
+			"position": [0, 0],
+			"size": [0, 25],
+			"parent": "mainPanel"
+		},
+		"checkMain": {
+			"type": "CheckBox",
+			"selected": true,
+			"text": "CheckBox",
+			"position": [0, 0],
+			"size": [0, 25],
+			"parent": "mainPanel"
+		},
+		"radioGroupMain": {
+			"type": "RadioGroup",
+			"selected": -1,
+			"options": [
+				"Option 1",
+				"Option 2",
+				"Option 3"
+			],
+			"position": [0, 0],
+			"size": [0, 25],
+			"parent": "mainPanel"
+		},
+		"textEntryMain": {
+			"type": "Entry",
+			"text": "Edit Me",
+			"readOnly": false,
+			"masked": false,
+			"position": [0, 0],
+			"size": [0, 24],
+			"parent": "mainPanel"
+		}
+	}
+}
