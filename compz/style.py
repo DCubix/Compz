@@ -39,4 +39,4 @@ class Style:
 		w = 1.0 / 5
 		h = 1.0 / 6
 
-		return Rect(col * w, row * h, w, h)
+		return Rect((col * w), (row * h) - (h / self.skin.size[1]), w, h)

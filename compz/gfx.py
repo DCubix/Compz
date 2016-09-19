@@ -247,8 +247,8 @@ class GFXbase:
 
 	def clipEnd(self):
 		glScissor(*self.sbox)
-		if not self.on:
-			glDisable(GL_SCISSOR_TEST)
+		#if not self.on:
+		glDisable(GL_SCISSOR_TEST)
 
 
 class GFXvbo(GFXbase):

@@ -58,10 +58,6 @@ class Compz:
 		comps = sorted(self.components,
 			key=lambda x: isinstance(x, Panel), reverse=True)
 		
-		width = render.getWindowWidth()
-		height = render.getWindowHeight()
-		self.gfx.clipBegin(0, 0, width, height)
-		
 		for comp in comps:
 			if not comp.visible:
 				continue
@@ -77,7 +73,6 @@ class Compz:
 			if not comp.finished:
 				comp.endDraw()
 
-		self.gfx.clipEnd()
 		Font.first = True
 
 	def event(self):
