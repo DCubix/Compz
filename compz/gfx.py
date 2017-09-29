@@ -66,27 +66,27 @@ def GFX_mousePosition():
 
 
 def GFX_mouseClick(button):
-	return logic.mouse.events[button] == logic.KX_INPUT_JUST_ACTIVATED
+	return logic.mouse.inputs[button].activated == True
 
 
 def GFX_mouseDown(button):
-	return logic.mouse.events[button] == logic.KX_INPUT_ACTIVE
+	return logic.mouse.inputs[button].active == True
 
 
 def GFX_mouseRelease(button):
-	return logic.mouse.events[button] == logic.KX_INPUT_JUST_RELEASED
+	return logic.mouse.inputs[button].released == True
 
 
 def GFX_keyDown(btn, state=logic.KX_INPUT_ACTIVE):
-	return logic.keyboard.events[btn] == state
+	return logic.keyboard.inputs[btn].active == True
 
 
 def GFX_keyPressed(btn, state=logic.KX_INPUT_JUST_ACTIVATED):
-	return logic.keyboard.events[btn] == state
+	return logic.keyboard.inputs[btn].activated == True
 
 
 def GFX_keyReleased(btn, state=logic.KX_INPUT_JUST_RELEASED):
-	return logic.keyboard.events[btn] == state
+	return logic.keyboard.inputs[btn].released == True
 
 
 def GFX_getAllKeys():
